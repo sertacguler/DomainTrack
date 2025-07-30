@@ -1,0 +1,37 @@
+name: domain_track
+description: "A new Flutter project."
+
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.7.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+  http: ^1.2.1
+  cupertino_icons: ^1.0.8
+  url_launcher: ^6.2.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_launcher_icons: "^0.14.4"
+  flutter_lints: ^5.0.0
+
+flutter:
+
+  uses-material-design: true
+
+  assets:
+    - assets/images/logo.jpeg
+
+flutter_launcher_icons:
+  android: "launcher_icon" # Android için özel isim (isteğe bağlı)
+  ios: true
+  image_path: "assets/images/logo.jpeg" # Logonuzun yolu
+  remove_alpha_ios: true # iOS'ta şeffaflığı kaldırır (kenarlarda beyazlık olmaması için)
+  adaptive_icon_background: "#FFFFFF" # Adaptif ikonlar için arka plan rengi (Android)
+  adaptive_icon_foreground: "assets/images/logo.jpeg" # Adaptif ikonlar için ön plan (Android)
