@@ -13,7 +13,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Domain Sorgulama Uygulaması', // Uygulama başlığı güncellendi
+      title: 'Domain Query Application', // Application title updated
       theme: ThemeData(
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
@@ -38,9 +38,8 @@ class _EmailListScreenState extends State<EmailListScreen> {
 
   bool _isLoading = false;
 
-  // --- Yeni Filtreleme Alanı Değişkenleri ---
   List<String> _allExtensions = [];
-  List<String> _selectedExtensions = []; // Seçili uzantılar listesi
+  List<String> _selectedExtensions = [];
 
   @override
   void initState() {
@@ -50,7 +49,7 @@ class _EmailListScreenState extends State<EmailListScreen> {
 
   @override
   void dispose() {
-    _domainController.dispose(); // Controller güncellendi
+    _domainController.dispose();
     super.dispose();
   }
 
@@ -69,10 +68,7 @@ class _EmailListScreenState extends State<EmailListScreen> {
     });
 
     try {
-      // Varsayım: getSearchByEmailOrUsernameService fonksiyonu filtreleri de alabilir.
-      // Şu an için sadece domain gönderiyoruz, ancak API'nizi uzantı filtrelerini alacak şekilde güncellemeyi düşünebilirsiniz.
-      // Örneğin: final data = await getSearchByEmailOrUsernameService(domain, selectedExtensions: _selectedExtensions);
-      final data = await getSearchByEmailOrUsernameService(
+       final data = await getSearchByEmailOrUsernameService(
         domain,
         _selectedExtensions,
       );
@@ -85,7 +81,7 @@ class _EmailListScreenState extends State<EmailListScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            'Veri getirilirken bir hata oluştu: ${e.toString()}', // Hata mesajı Türkçe
+            'An error occurred while fetching data: ${e.toString()}', // Error message in English
           ),
           duration: const Duration(seconds: 3),
         ),
@@ -97,19 +93,19 @@ class _EmailListScreenState extends State<EmailListScreen> {
     }
   }
 
-  // --- Bilgi Dialog Fonksiyonu ---
+  // --- Info Dialog Function ---
   void _showInfoDialog(BuildContext context) {
     showDialog<void>(
       context: context,
       builder: (BuildContext dialogContext) {
         return AlertDialog(
-          title: const Text('Bilgi'), // Başlık Türkçe
+          title: const Text('Information'), // Title in English
           content: const Text(
-            'Bu uygulama, girdiğiniz domain adresinin boşta olup olmadığını veya hangi firma tarafından kaydedildiğini sorgular. Domain sorgulama işlemleri halka açık WHOIS veritabanları üzerinden yapılır. Verilerin güncelliği ve doğruluğu WHOIS sunucularına bağlıdır.', // İçerik güncellendi
+            'This application queries whether the domain address you entered is available or which company registered it. Domain query operations are performed via public WHOIS databases. The currency and accuracy of the data depend on the WHOIS servers.', // Content updated
           ),
           actions: <Widget>[
             TextButton(
-              child: const Text('Tamam'), // Buton Türkçe
+              child: const Text('OK'), // Button in English
               onPressed: () {
                 Navigator.of(dialogContext).pop(); // Close dialog
               },
@@ -120,23 +116,23 @@ class _EmailListScreenState extends State<EmailListScreen> {
     );
   }
 
-  // --- Uzantı Filtreleme Dialog Fonksiyonu ---
+  // --- Extension Filter Dialog Function ---
   void _showExtensionFilterDialog(BuildContext context) {
-    // Dialog içinde seçilenleri geçici olarak tutmak için kopya oluştur
+    // Create a copy to temporarily hold selections within the dialog
     final List<String> tempSelectedExtensions = List.from(_selectedExtensions);
 
     showDialog<void>(
       context: context,
       builder: (BuildContext dialogContext) {
         return StatefulBuilder(
-          // Dialog içindeki state'i güncellemek için StatefulBuilder kullanıyoruz
+          // We use StatefulBuilder to update the state within the dialog
           builder: (context, setStateInDialog) {
             return AlertDialog(
-              title: const Text('Uzantıları Filtrele'),
+              title: const Text('Filter Extensions'),
               content: SizedBox(
-                width: double.maxFinite, // Dialogun genişliğini artır
+                width: double.maxFinite, // Increase dialog width
                 child: Column(
-                  mainAxisSize: MainAxisSize.min, // İçeriğe göre boyutlan
+                  mainAxisSize: MainAxisSize.min, // Size according to content
                   children: [
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -145,11 +141,11 @@ class _EmailListScreenState extends State<EmailListScreen> {
                           onPressed: () {
                             setStateInDialog(() {
                               tempSelectedExtensions
-                                  .clear(); // Seçimleri temizle
+                                  .clear(); // Clear selections
                             });
                           },
                           icon: const Icon(Icons.clear_all),
-                          label: const Text('Temizle'),
+                          label: const Text('Clear'),
                         ),
                         ElevatedButton.icon(
                           onPressed: () {
@@ -157,23 +153,23 @@ class _EmailListScreenState extends State<EmailListScreen> {
                               tempSelectedExtensions.clear();
                               tempSelectedExtensions.addAll(
                                 _allExtensions,
-                              ); // Tümünü seç
+                              ); // Select All
                             });
                           },
                           icon: const Icon(Icons.select_all),
-                          label: const Text('Tümünü Seç'),
+                          label: const Text('Select All'),
                         ),
                       ],
                     ),
                     const Divider(),
                     Expanded(
-                      // Checkbox listesinin kaydırılabilir olması için Expanded
+                      // Expanded for scrollable Checkbox list
                       child: GridView.builder(
-                        shrinkWrap: true, // İçeriğine göre boyutlan
+                        shrinkWrap: true, // Size according to content
                         gridDelegate:
                             const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 2, // Yan yana 3 sütun
-                              childAspectRatio: 3.5, // Öğelerin en-boy oranı
+                              crossAxisCount: 2, // 3 columns side by side
+                              childAspectRatio: 3.5, // Aspect ratio of items
                             ),
                         itemCount: _allExtensions.length,
                         itemBuilder: (context, index) {
@@ -196,7 +192,7 @@ class _EmailListScreenState extends State<EmailListScreen> {
                                 },
                               ),
                               Flexible(
-                                // Uzun metinler için esneklik
+                                // Flexibility for long texts
                                 child: Text(
                                   extension,
                                   overflow: TextOverflow.ellipsis,
@@ -212,10 +208,10 @@ class _EmailListScreenState extends State<EmailListScreen> {
               ),
               actions: <Widget>[
                 TextButton(
-                  child: const Text('Tamam'),
+                  child: const Text('OK'),
                   onPressed: () {
                     setState(() {
-                      // Ana widget'ın state'ini güncelle
+                      // Update the main widget's state
                       _selectedExtensions = List.from(tempSelectedExtensions);
                     });
                     Navigator.of(dialogContext).pop();
@@ -229,21 +225,21 @@ class _EmailListScreenState extends State<EmailListScreen> {
     );
   }
 
-  // Tarihleri daha okunaklı hale getiren yardımcı fonksiyon
+  // Helper function to format dates for better readability
   String _formatDateTime(String? dateTimeString) {
     if (dateTimeString == null || dateTimeString.isEmpty) {
-      return 'Yok';
+      return 'N/A';
     }
     try {
-      // Gelen tarih formatı "2024-03-30 18:03:52" veya "[datetime.datetime(2025, 3, 31, 7, 32, 43), ...]" olabilir.
-      // İlk duruma göre parse etmeye çalışalım.
+      // The incoming date format might be "2024-03-30 18:03:52" or "[datetime.datetime(2025, 3, 31, 7, 32, 43), ...]".
+      // Let's try to parse the first case.
       final DateTime dateTime = DateTime.parse(dateTimeString);
       return '${dateTime.day.toString().padLeft(2, '0')}.${dateTime.month.toString().padLeft(2, '0')}.${dateTime.year} ${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
     } catch (e) {
-      // Eğer doğrudan parse edilemezse, "[datetime.datetime(...)]" formatını kontrol et
+      // If not directly parsable, check for "[datetime.datetime(...)]" format
       if (dateTimeString.startsWith('[datetime.datetime(') &&
           dateTimeString.endsWith(')]')) {
-        // Regex ile tarihi ayıklama
+        // Extract date using regex
         final RegExp regExp = RegExp(
           r'datetime\.datetime\((\d{4}), (\d{1,2}), (\d{1,2}), (\d{1,2}), (\d{1,2}), (\d{1,2})',
         );
@@ -266,11 +262,11 @@ class _EmailListScreenState extends State<EmailListScreen> {
             );
             return '${dateTime.day.toString().padLeft(2, '0')}.${dateTime.month.toString().padLeft(2, '0')}.${dateTime.year} ${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
           } catch (_) {
-            return 'Geçersiz Tarih Formatı';
+            return 'Invalid Date Format';
           }
         }
       }
-      return 'Geçersiz Tarih Formatı'; // Her iki format da uymazsa
+      return 'Invalid Date Format'; // If neither format matches
     }
   }
 
@@ -286,7 +282,7 @@ class _EmailListScreenState extends State<EmailListScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Domain Track', // Başlık güncel
+                  'Domain Track', // Title updated
                   style: TextStyle(fontSize: 32.0, fontWeight: FontWeight.w900),
                 ),
               ],
@@ -305,7 +301,7 @@ class _EmailListScreenState extends State<EmailListScreen> {
               ),
             ),
             onPressed: () {
-              _showInfoDialog(context); // Bilgi dialogunu göster
+              _showInfoDialog(context); // Show info dialog
             },
           ),
           const SizedBox(width: 8),
@@ -321,20 +317,20 @@ class _EmailListScreenState extends State<EmailListScreen> {
               children: [
                 Expanded(
                   child: TextField(
-                    controller: _domainController, // Controller güncellendi
+                    controller: _domainController, // Controller updated
                     decoration: InputDecoration(
                       labelText:
-                          'Domain Adresi Girin', // Etiket Türkçe ve güncellendi
-                      hintText: '', // Örnek metin güncellendi
+                          'Enter Domain Address', // Label in English and updated
+                      hintText: '', // Hint text updated
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8.0),
                       ),
                       prefixIcon: const Icon(
                         Icons.language,
-                      ), // İkon domain için uygun
+                      ), // Icon suitable for domain
                     ),
                     keyboardType:
-                        TextInputType.url, // Klavye tipi URL için uygun
+                        TextInputType.url, // Keyboard type suitable for URL
                   ),
                 ),
                 const SizedBox(width: 10),
@@ -353,7 +349,7 @@ class _EmailListScreenState extends State<EmailListScreen> {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
                                   content: Text(
-                                    'Lütfen bir domain adresi girin.', // Mesaj Türkçe
+                                    'Please enter a domain address.', // Message in English
                                   ),
                                   duration: Duration(seconds: 2),
                                 ),
@@ -361,7 +357,7 @@ class _EmailListScreenState extends State<EmailListScreen> {
                             }
                           },
                   icon: const Icon(Icons.search),
-                  label: const Text('Sorgula'), // Buton metni Türkçe
+                  label: const Text('Query'), // Button text in English
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(
                       vertical: 16.0,
@@ -374,10 +370,8 @@ class _EmailListScreenState extends State<EmailListScreen> {
                 ),
               ],
             ),
-            const SizedBox(
-              height: 10,
-            ), // Arama alanı ile filtre alanı arasına boşluk
-            // --- Yeni Filtreleme Alanı ---
+            const SizedBox(height: 10), // Space between search and filter area
+            // --- New Filtering Area ---
             Row(
               children: [
                 Expanded(
@@ -390,18 +384,18 @@ class _EmailListScreenState extends State<EmailListScreen> {
                       border: Border.all(color: Colors.grey.shade300),
                       borderRadius: BorderRadius.circular(8.0),
                     ),
-                    height: 40, // Sabit bir yükseklik verelim
+                    height: 40, // Give a fixed height
                     child:
                         _selectedExtensions.isEmpty
                             ? const Center(
                               child: Text(
-                                'Filtre uygulanmadı (Tüm uzantılar)',
+                                'No filter applied (All extensions)',
                                 style: TextStyle(color: Colors.grey),
                               ),
                             )
                             : ListView.builder(
                               scrollDirection:
-                                  Axis.horizontal, // Yatay kaydırılabilir
+                                  Axis.horizontal, // Scrollable horizontally
                               itemCount: _selectedExtensions.length,
                               itemBuilder: (context, index) {
                                 return Padding(
@@ -414,7 +408,7 @@ class _EmailListScreenState extends State<EmailListScreen> {
                                           (index ==
                                                   _selectedExtensions.length - 1
                                               ? ''
-                                              : ' |'), // Pipe ekle
+                                              : ' |'), // Add pipe
                                       style: const TextStyle(
                                         fontWeight: FontWeight.w500,
                                       ),
@@ -428,12 +422,10 @@ class _EmailListScreenState extends State<EmailListScreen> {
                 const SizedBox(width: 10),
                 ElevatedButton.icon(
                   onPressed: () {
-                    _showExtensionFilterDialog(
-                      context,
-                    ); // Filtre dialogunu göster
+                    _showExtensionFilterDialog(context); // Show filter dialog
                   },
                   icon: const Icon(Icons.filter_list),
-                  label: const Text('Filtrele'),
+                  label: const Text('Filter'),
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(
                       vertical: 16.0,
@@ -453,7 +445,7 @@ class _EmailListScreenState extends State<EmailListScreen> {
                 : _backendData.isEmpty
                 ? const Center(
                   child: Text(
-                    'Henüz bir domain sorgulanmadı veya sonuç bulunamadı. Lütfen bir domain adresi girip sorgulayın.', // Mesaj Türkçe ve güncel
+                    'No domain queried yet or no results found. Please enter a domain address and query.', // Message in English and updated
                     textAlign: TextAlign.center,
                     style: TextStyle(fontSize: 16, color: Colors.grey),
                   ),
@@ -463,18 +455,17 @@ class _EmailListScreenState extends State<EmailListScreen> {
                     itemCount: _backendData.length,
                     itemBuilder: (context, index) {
                       final item = _backendData[index];
-                      final String domain =
-                          item['Domain'] ?? 'Bilinmeyen Domain';
-                      final String status = item['Status'] ?? 'Bilinmiyor';
+                      final String domain = item['Domain'] ?? 'Unknown Domain';
+                      final String status = item['Status'] ?? 'Unknown';
 
-                      // Duruma göre renk seçimi
+                      // Choose color based on status
                       Color statusColor;
                       if (status.contains('Available')) {
                         statusColor = Colors.green;
                       } else if (status.contains('Registered')) {
                         statusColor = Colors.red;
                       } else {
-                        statusColor = Colors.blue; // Varsayılan renk
+                        statusColor = Colors.blue; // Default color
                       }
 
                       return Card(
@@ -490,17 +481,17 @@ class _EmailListScreenState extends State<EmailListScreen> {
                             style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
                           subtitle: Text(
-                            'Durum: $status',
+                            'Status: $status',
                             style: TextStyle(
                               color: statusColor,
                               fontWeight: FontWeight.w900,
                             ),
                           ),
                           onTap: () {
-                            // Sadece 'Registered' durumundaysa detayları göster
+                            // Show details only if status is 'Registered'
                             if (status.contains('Registered')) {
                               final String registrar =
-                                  item['Registrar'] ?? 'Bilinmiyor';
+                                  item['Registrar'] ?? 'Unknown';
                               final String creationDate = _formatDateTime(
                                 item['CreationDate'],
                               );
@@ -515,7 +506,7 @@ class _EmailListScreenState extends State<EmailListScreen> {
                                 context: context,
                                 builder: (BuildContext dialogContext) {
                                   return AlertDialog(
-                                    title: const Text('Domain Detayları'),
+                                    title: const Text('Domain Details'),
                                     content: SingleChildScrollView(
                                       child: RichText(
                                         text: TextSpan(
@@ -531,7 +522,7 @@ class _EmailListScreenState extends State<EmailListScreen> {
                                             ),
                                             TextSpan(text: '$domain\n'),
                                             const TextSpan(
-                                              text: 'Durum: ',
+                                              text: 'Status: ',
                                               style: TextStyle(
                                                 fontWeight: FontWeight.bold,
                                               ),
@@ -544,28 +535,28 @@ class _EmailListScreenState extends State<EmailListScreen> {
                                               ),
                                             ),
                                             const TextSpan(
-                                              text: 'Kayıtçı: ',
+                                              text: 'Registrar: ',
                                               style: TextStyle(
                                                 fontWeight: FontWeight.bold,
                                               ),
                                             ),
                                             TextSpan(text: '$registrar\n'),
                                             const TextSpan(
-                                              text: 'Oluşturulma Tarihi: ',
+                                              text: 'Creation Date: ',
                                               style: TextStyle(
                                                 fontWeight: FontWeight.bold,
                                               ),
                                             ),
                                             TextSpan(text: '$creationDate\n'),
                                             const TextSpan(
-                                              text: 'Bitiş Tarihi: ',
+                                              text: 'Expiration Date: ',
                                               style: TextStyle(
                                                 fontWeight: FontWeight.bold,
                                               ),
                                             ),
                                             TextSpan(text: '$expirationDate\n'),
                                             const TextSpan(
-                                              text: 'Güncellenme Tarihi: ',
+                                              text: 'Updated Date: ',
                                               style: TextStyle(
                                                 fontWeight: FontWeight.bold,
                                               ),
@@ -577,7 +568,7 @@ class _EmailListScreenState extends State<EmailListScreen> {
                                     ),
                                     actions: <Widget>[
                                       TextButton(
-                                        child: const Text('Tamam'),
+                                        child: const Text('OK'),
                                         onPressed: () {
                                           Navigator.of(dialogContext).pop();
                                         },
