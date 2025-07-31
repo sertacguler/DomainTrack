@@ -68,7 +68,7 @@ class _EmailListScreenState extends State<EmailListScreen> {
     });
 
     try {
-       final data = await getSearchByEmailOrUsernameService(
+      final data = await getSearchByEmailOrUsernameService(
         domain,
         _selectedExtensions,
       );
@@ -231,15 +231,11 @@ class _EmailListScreenState extends State<EmailListScreen> {
       return 'N/A';
     }
     try {
-      // The incoming date format might be "2024-03-30 18:03:52" or "[datetime.datetime(2025, 3, 31, 7, 32, 43), ...]".
-      // Let's try to parse the first case.
       final DateTime dateTime = DateTime.parse(dateTimeString);
       return '${dateTime.day.toString().padLeft(2, '0')}.${dateTime.month.toString().padLeft(2, '0')}.${dateTime.year} ${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
     } catch (e) {
-      // If not directly parsable, check for "[datetime.datetime(...)]" format
       if (dateTimeString.startsWith('[datetime.datetime(') &&
           dateTimeString.endsWith(')]')) {
-        // Extract date using regex
         final RegExp regExp = RegExp(
           r'datetime\.datetime\((\d{4}), (\d{1,2}), (\d{1,2}), (\d{1,2}), (\d{1,2}), (\d{1,2})',
         );
@@ -266,8 +262,28 @@ class _EmailListScreenState extends State<EmailListScreen> {
           }
         }
       }
-      return 'Invalid Date Format'; // If neither format matches
+      return 'Invalid Date Format';
     }
+  }
+
+  // Helper function to format emails, placing each on a new line
+  String _formatEmails(dynamic emailData) {
+    if (emailData == null) {
+      return 'N/A';
+    } else if (emailData is List) {
+      // If it's already a list of emails
+      return emailData.join('\n');
+    } else if (emailData is String) {
+      // If it's a single string, try splitting by common delimiters like comma or semicolon
+      if (emailData.contains(',')) {
+        return emailData.split(',').map((e) => e.trim()).join('\n');
+      } else if (emailData.contains(';')) {
+        return emailData.split(';').map((e) => e.trim()).join('\n');
+      } else {
+        return emailData.trim(); // Just return the single email
+      }
+    }
+    return 'N/A'; // Fallback for unexpected types
   }
 
   @override
@@ -357,7 +373,7 @@ class _EmailListScreenState extends State<EmailListScreen> {
                             }
                           },
                   icon: const Icon(Icons.search),
-                  label: const Text('Query'), // Button text in English
+                  label: const Text('Search'), // Button text in English
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(
                       vertical: 16.0,
@@ -492,6 +508,8 @@ class _EmailListScreenState extends State<EmailListScreen> {
                             if (status.contains('Registered')) {
                               final String registrar =
                                   item['Registrar'] ?? 'Unknown';
+                              final dynamic emailData =
+                                  item['Emails']; // Keep as dynamic to handle list or string
                               final String creationDate = _formatDateTime(
                                 item['CreationDate'],
                               );
@@ -541,6 +559,17 @@ class _EmailListScreenState extends State<EmailListScreen> {
                                               ),
                                             ),
                                             TextSpan(text: '$registrar\n'),
+                                            const TextSpan(
+                                              text:
+                                                  'Email(s): ', // Changed label to plural
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                            TextSpan(
+                                              text:
+                                                  '${_formatEmails(emailData)}\n',
+                                            ), // Use the new function
                                             const TextSpan(
                                               text: 'Creation Date: ',
                                               style: TextStyle(
